@@ -1,9 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
+import { Entity, PrimaryColumn, PrimaryGeneratedColumn, Column } from "typeorm"
 
 @Entity()
 export class Application {
     @PrimaryGeneratedColumn()
-    id: number
+    no: number
+
+    @PrimaryColumn()
+    id: string
 
     @Column()
     name: string

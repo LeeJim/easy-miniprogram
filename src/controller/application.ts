@@ -1,6 +1,7 @@
 import * as Router from 'koa-router'
-import AppDataSource from '../../data-source';
-import { Application } from '../../entity';
+import AppDataSource from '../data-source';
+import { Application } from '../entity';
+import { hash } from '../utils'
 
 const router = new Router({ prefix: '/application' });
 
@@ -9,7 +10,10 @@ router.all('/add', async (ctx, next) => {
   ctx.body = 'application add'
 
   const application = new Application();
+  const appRepostory = AppDataSource.getRepository(Application);
+  const [, appCount] = await appRepostory.findAndCount();
 
+  application.id = hash.update(name + appid + appCount).copy().digest('base64');
   application.name = name;
   application.appid = appid;
   application.secret = secret;

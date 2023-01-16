@@ -7,5 +7,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "baseUrl": "src",
+    "moduleResolution": "node"
   },
+  
 }

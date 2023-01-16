@@ -6,7 +6,7 @@ import * as bodyParser from 'koa-bodyparser';
 import * as logger from 'koa-logger'
 import * as json from 'koa-json'
 
-import { Application } from './controller';
+import { Application, Miniprogram } from './controller';
 import AppDataSource from './data-source';
 
 dotenv.config()
@@ -26,6 +26,7 @@ app.use(logger())
 app.use(bodyParser())
 
 app.use(Application.routes());
+app.use(Miniprogram.routes())
 app.use(router.routes()).use(router.allowedMethods());
 
 const port = process.env.PORT || 2023;
