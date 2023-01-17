@@ -1,8 +1,11 @@
 import * as Router from 'koa-router'
 import axios from 'axios';
+import { createClient } from 'redis';
+
+import { hash } from '../utils'
 
 import AppDataSource from '../data-source';
-import { Application } from '../entity';
+import { Application, User } from '../entity';
 
 const router = new Router({ prefix: '/miniprogram' });
 
@@ -25,8 +28,25 @@ router.all('/login', async (ctx, next) => {
 
   if (res.status == 200) {
     const { session_key, openid } = res.data;
+    const client = createClient();
+    const userRepostory = AppDataSource.getRepository(User);
+    const user = await userRepostory.findOneBy({ openid });
 
-    ctx.body = 'interal cookie' // todo
+    if (!user) {
+      const newUser = new User();
+      newUser.openid = openid;
+      await AppDataSource.manager.save(newUser)
+    }
+
+    const key = hash(session_key + new Date().getTime())
+
+    client.on('error', (err) => console.log('Redis Client Error', err));
+    await client.connect();
+    await client.set(key, `${session_key},${openid}`);
+
+    ctx.body = { errno: 0, data: { key }}
+  } else {
+    ctx.body = { errno: -1, errmsg: res.statusText }
   }
   
   await next()

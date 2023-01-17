@@ -13,7 +13,7 @@ router.all('/add', async (ctx, next) => {
   const appRepostory = AppDataSource.getRepository(Application);
   const [, appCount] = await appRepostory.findAndCount();
 
-  application.id = hash.update(name + appid + appCount).copy().digest('base64');
+  application.id = hash(name + appid + appCount);
   application.name = name;
   application.appid = appid;
   application.secret = secret;
