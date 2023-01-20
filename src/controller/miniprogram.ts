@@ -5,7 +5,7 @@ import { createClient } from 'redis';
 import { hash } from '../utils'
 
 import AppDataSource from '../data-source';
-import { Application, User } from '../entity';
+import { Application, User, Subscription } from '../entity';
 
 const router = new Router({ prefix: '/miniprogram' });
 
@@ -50,6 +50,27 @@ router.all('/login', async (ctx, next) => {
   }
   
   await next()
+})
+
+router.all('/add-subscribe', async (ctx, next) => {
+  const { templateIds } = ctx.request.body as any; 
+  const openid = ''; // todo 通过中间件获得 openid
+
+  try {
+    templateIds.forEach(async tmp => {
+      const subscription = new Subscription();
+  
+      subscription.templateid = tmp;
+      subscription.openid = openid;
+  
+      await AppDataSource.manager.save(subscription)
+    });
+    ctx.body = { errno: 0 }
+  } catch(err) {
+    ctx.body = { errno: -1, errmsg: err }
+  }
+
+  await next();
 })
 
 export default router;
