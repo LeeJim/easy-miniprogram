@@ -1,8 +1,9 @@
 import * as Router from 'koa-router'
 import axios from 'axios';
-import { createClient } from 'redis';
 
+import redis from '../db/redis';
 import { hash } from '../utils'
+import user from '../middleware/user';
 
 import AppDataSource from '../data-source';
 import { Application, User, Subscription } from '../entity';
@@ -10,7 +11,7 @@ import { Application, User, Subscription } from '../entity';
 const router = new Router({ prefix: '/miniprogram' });
 
 router.all('/login', async (ctx, next) => {
-  const { code, id } = ctx.request.body as any;
+  const { code, id } = ctx.request.body as any; // todo 参数校验
   
   const appRepostory = AppDataSource.getRepository(Application);
   const app = await appRepostory.findOneBy({ id });
@@ -24,11 +25,9 @@ router.all('/login', async (ctx, next) => {
     }
   })
 
-  console.log('data', res.data);
-
-  if (res.status == 200) {
+  if (res.status == 200 && 'openid' in res.data) {
     const { session_key, openid } = res.data;
-    const client = createClient();
+    const client = await redis();
     const userRepostory = AppDataSource.getRepository(User);
     const user = await userRepostory.findOneBy({ openid });
 
@@ -40,21 +39,21 @@ router.all('/login', async (ctx, next) => {
 
     const key = hash(session_key + new Date().getTime())
 
-    client.on('error', (err) => console.log('Redis Client Error', err));
-    await client.connect();
     await client.set(key, `${session_key},${openid}`);
 
     ctx.body = { errno: 0, data: { key }}
   } else {
+    console.log(res.data.errmsg);
     ctx.body = { errno: -1, errmsg: res.statusText }
   }
   
   await next()
 })
 
-router.all('/add-subscribe', async (ctx, next) => {
+router.all('/add-subscribe', user(), async (ctx, next) => {
   const { templateIds } = ctx.request.body as any; 
-  const openid = ''; // todo 通过中间件获得 openid
+  console.log(ctx.state.sessionInfo);
+  const { openid } = ctx.state.sessionInfo;
 
   try {
     templateIds.forEach(async tmp => {
