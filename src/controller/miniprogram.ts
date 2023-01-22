@@ -3,7 +3,7 @@ import axios from 'axios';
 
 import redis from '../db/redis';
 import { hash } from '../utils'
-import user from '../middleware/user';
+import { session } from '../middleware';
 
 import AppDataSource from '../data-source';
 import { Application, User, Subscription } from '../entity';
@@ -39,7 +39,7 @@ router.all('/login', async (ctx, next) => {
 
     const key = hash(session_key + new Date().getTime())
 
-    await client.set(key, `${session_key},${openid}`);
+    await client.set(key, `${session_key},${openid},${app.appid}`);
 
     ctx.body = { errno: 0, data: { key }}
   } else {
@@ -50,9 +50,8 @@ router.all('/login', async (ctx, next) => {
   await next()
 })
 
-router.all('/add-subscribe', user(), async (ctx, next) => {
+router.all('/add-subscribe', session(), async (ctx, next) => {
   const { templateIds } = ctx.request.body as any; 
-  console.log(ctx.state.sessionInfo);
   const { openid } = ctx.state.sessionInfo;
 
   try {

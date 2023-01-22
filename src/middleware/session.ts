@@ -1,6 +1,6 @@
 import redis from '../db/redis';
 
-export default function user() {
+export function session() {
 
   return async function(ctx, next) {
     const { token } = ctx.request.body;
@@ -8,9 +8,9 @@ export default function user() {
 
     if (token) {
       const res = await client.get(token);
-      const [session_key, openid] = res.split(',');
+      const [session_key, openid, appid] = res.split(',');
       
-      ctx.state.sessionInfo = { session_key, openid }
+      ctx.state.sessionInfo = { session_key, openid, appid }
     } else {
       console.log('without token');
     } 
