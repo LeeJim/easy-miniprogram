@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm"
-import { Application, User, Subscription, Action } from './entity'
+import { Application, User, Subscription, Action, Sku, Barcode } from './entity'
 
 require('dotenv').config({ debug: true })
 
@@ -14,7 +14,7 @@ export default new DataSource({
   database: MYSQL_DB,
   synchronize: true,
   logging: true,
-  entities: [Application, User, Subscription, Action],
+  entities: [Application, User, Subscription, Action, Sku, Barcode],
   subscribers: [],
   migrations: [],
 })
