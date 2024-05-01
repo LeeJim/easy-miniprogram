@@ -8,81 +8,75 @@ export class Barcode {
     @PrimaryColumn()
     barcode: string
 
-    @Column()
+    @Column({charset: 'utf8mb4',collation: 'utf8mb4_unicode_ci'})
     name: string
 
-    @Column()
-    ename: string
+    @Column({ default: 'unknown' })
+    unspsc?: string // 分类
 
-    @Column()
-    unspsc: string
-
-    @Column()
+    @Column({charset: 'utf8mb4',collation: 'utf8mb4_unicode_ci'})
     brand: string
 
-    @Column()
-    type: string
+    @Column({ default: 'unknown' })
+    type?: string // 规格型号
 
-    @Column()
+    @Column({charset: 'utf8mb4',collation: 'utf8mb4_unicode_ci'})
     width: string
 
-    @Column()
+    @Column({charset: 'utf8mb4',collation: 'utf8mb4_unicode_ci'})
     height: string
 
-    @Column()
+    @Column({charset: 'utf8mb4',collation: 'utf8mb4_unicode_ci'})
     depth: string
 
-    @Column()
-    origincountry: string
+    @Column({ default: 'unknown' })
+    origincountry?: string
 
-    @Column()
-    originplace: string
+    @Column({ default: 'unknown' })
+    originplace?: string
 
-    @Column()
-    assemblycountry: string
+    @Column({ default: 'unknown' })
+    assemblycountry?: string
 
-    @Column()
-    barcodetype: string
+    @Column({ default: 'unknown' })
+    barcodetype?: string // 条码类型
 
-    @Column()
-    catena: string
+    @Column({ default: 'unknown' })
+    catena?: string // 产品系列
 
-    @Column()
-    isbasicunit: number
+    @Column({ default: 0 })
+    isbasicunit?: number // 是否是基础单元
 
-    @Column()
-    packagetype: string
+    @Column({ default: 'unknown' })
+    packagetype?: string // 包装类型
 
-    @Column()
-    grossweight: string
+    @Column({charset: 'utf8mb4',collation: 'utf8mb4_unicode_ci'})
+    grossweight: string // 毛重
 
-    @Column()
-    netweight: string
+    @Column({ default: 'unknown' })
+    netweight?: string // 净重
 
-    @Column()
-    description: string
+    @Column({ default: 'unknown' })
+    description?: string // 描述
 
-    @Column()
-    keyword: string
+    @Column({ default: 'unknown' })
+    keyword?: string // 关键字
 
     @Column()
     pic: string
 
-    @Column()
-    price: string
+    @Column({ default: 'unknown' })
+    price?: string
 
-    @Column()
-    licensenum: string
+    @Column({ default: 'unknown' })
+    licensenum?: string // 生产许可证
 
-    @Column()
-    healthpermitnum: string
+    @Column({ default: 'unknown' })
+    healthpermitnum?: string // 卫生许可证
 
-    @Column()
-    netcontent: string
+    @Column({ default: 'unknown' })
+    netcontent?: string // 净含量
 
-    @Column()
+    @Column({charset: 'utf8mb4',collation: 'utf8mb4_unicode_ci'})
     company: string
-
-    @Column()
-    expirationdate: string
 }

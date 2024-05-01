@@ -1,17 +1,20 @@
 import * as Router from 'koa-router'
 import AppDataSource from '../data-source';
-import { Sku, Barcode } from '../entity';
+import { Sku } from '../entity';
+import { session } from '../middleware';
 
 const router = new Router({ prefix: '/stock' });
 
-router.all('/add', async (ctx, next) => {
-  const { name, barcode, producedDate, expirationDate, qualityGuaranteeDate, qualityGuaranteeDateUnit } = ctx.request.body as any;
-  
+router.all('/add', session(), async (ctx, next) => {
+  const { name, barcode, producedDate, expirationDate, qualityGuaranteeDate, qualityGuaranteeDateUnit, pic } = ctx.request.body as any;
 
-  console.log(ctx.request.body);
+  if (!ctx.state.sessionInfo) {
+    ctx.body = { code: 401, message: 'need authorized'}
+    await next();
+    return;
+  }
   
   const sku = new Sku();
-//   const appRepostory = AppDataSource.getRepository(Sku);
 
   sku.name = name;
   sku.barcode = barcode;
@@ -19,21 +22,17 @@ router.all('/add', async (ctx, next) => {
   sku.expiration_date = expirationDate;
   sku.quality_guarantee_date = qualityGuaranteeDate;
   sku.quality_gurantee_date_unit = qualityGuaranteeDateUnit;
-  sku.pic = ''
-  sku.creator_id = ''
+  sku.pic = pic
+  sku.creator_id = ctx.state.sessionInfo.openid;
 
-  await AppDataSource.manager.save(sku)
-
-  ctx.body = { data: null, code: 0, message: 'success' }
+  try {
+    await AppDataSource.manager.save(sku)
+    ctx.body = { data: null, code: 0, message: 'success' }
+  } catch(e) {
+    ctx.body = { data: null, code: 500, message: e.message }
+  }
   
   await next()
 })
-
-async function getBarcode(barcode) {
-  const barcodeReoo = AppDataSource.getRepository(Barcode);
-  const target = await barcodeReoo.findOneBy({ barcode })
-  
-  return target
-}
 
 export default router;

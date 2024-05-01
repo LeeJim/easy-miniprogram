@@ -17,5 +17,6 @@ export default new DataSource({
   entities: [Application, User, Subscription, Action, Sku, Barcode],
   subscribers: [],
   migrations: [],
+  charset: "utf8mb4"
 })
 

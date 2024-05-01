@@ -12,7 +12,7 @@ export function session() {
       
       ctx.state.sessionInfo = { session_key, openid, appid }
     } else {
-      console.log('without token');
+      ctx.state.sessionInfo = null;
     } 
 
     await next();
